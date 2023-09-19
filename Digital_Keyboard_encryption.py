@@ -1,7 +1,8 @@
 # Digital keyboard
 # Two text fields One read only
 # the standard keys function
-# The emoji keys function
+# The emoji keys function :p
+# The save button saves the text file :)
 # The text field allows input from the system keyboard and digital keyboard
 
 # The second text field is read only
@@ -9,34 +10,38 @@
 # Second screen will generate an AES encrypted text of your plain text message
 
 # During Operation:
-# *The digital keyboards additional keys do not function: capslock, shift, directional keys
+# *The digital keyboards additional keys do not function: capslock, shift, directional keys :(
 # Use the system keyboard ATM.
-# Added lines of code that should have fixed caps lock and shift from closing program without error, unexpectedly.
-# But, check out them emojis!!!
+# Added lines of code that should have fixed caps lock and shift from closing program without error, unexpectedly :(
+# But, check out them emojis always adding more :) !!!
 
-from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QScrollArea, QHBoxLayout, QFrame, QTextEdit
-from PyQt5.QtCore import Qt
-from cryptography.fernet import Fernet
 import base64
-import pyautogui
 import sys
+from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QScrollArea, QHBoxLayout, QFrame, QTextEdit
+from cryptography.fernet import Fernet
 
 
+# Define the main class inheriting from QWidget
 class DigitalKeyboard(QWidget):
     def __init__(self):
         super(DigitalKeyboard, self).__init__()
 
         # Emojis list
         emojis = ['😊', '😂', '😍', '😀', '😁', '🤣', '😄', '😅', '😆', '😉', '😋', '😎', '😘', '😗', '😙', '😚', '😛',
-                  '😜', '😝', '😞', '😟', '😠', '😡', '😢', '😭', '😰', '😱',
+                  '😜', '😝', '😞', '😟', '😠', '😡', '😢', '😭', '😰', '😱', '🌕', '🦄',
                   "👍", "👎", "👊", "✋", "👐", "🙌", "🙏", "🤝", "✌️", "🤟"]
 
+        # Initialize internal variables
         self.is_shift = False
         self.is_capslock = False  # Add this ine to keep track of the Caps Lock status
         self.setWindowTitle("Digital Keyboard")
-        layout = QGridLayout()
-        self.button_list = []
 
+        # Initialize grid layout
+        layout = QGridLayout()
+
+        # Initialize a list to store buttons
+        self.button_list = []
         self.emojis = emojis  # Save emojis to the object
 
         # Create two QTextEdit widgets (text boxes)
@@ -51,14 +56,16 @@ class DigitalKeyboard(QWidget):
         # Generate a random encryption key
         self.encryption_key = Fernet.generate_key()
         self.cipher_suite = Fernet(self.encryption_key)
-        print(f"Encryption Key: {self.encryption_key.decode()}")  # Debugging line; NEVER print a key in production
+
+        # Debugging line; NEVER print a key in production
+        print(f"Encryption Key: {self.encryption_key.decode()}")
 
         # Create a Save button and add it to layout
         save_button = QPushButton("Save")
         save_button.clicked.connect(self.save_text)
         layout.addWidget(save_button, 1, 24, 1, 1)
 
-        # Create a scroll area for emojis
+        # Create a scrollable area for emoji buttons
         scroll = QScrollArea()
         scroll.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
@@ -69,6 +76,7 @@ class DigitalKeyboard(QWidget):
         emoji_layout = QHBoxLayout()  # Changed to QHBoxLayout for horizontal layout
         emoji_frame.setLayout(emoji_layout)
 
+        # Create and add emoji buttons to the layout
         for emoji in emojis:
             emoji_button = QPushButton(emoji)
             emoji_button.clicked.connect(self.key_pressed)
@@ -77,6 +85,7 @@ class DigitalKeyboard(QWidget):
 
         scroll.setWidget(emoji_frame)
 
+        # Define keyboard layout and buttons
         self.rows = [
             ['Play', 'Pause', 'Stop', 'Next', 'Prev'],  # Media keys
             ['@', '#', '$', '%', '^'],  # Special characters
@@ -88,6 +97,7 @@ class DigitalKeyboard(QWidget):
             ['Space']
         ]
 
+        # Create and add buttons for keyboard layout
         for i, row in enumerate(self.rows):
             for j, button_text in enumerate(row):
                 button = QPushButton(button_text)
@@ -101,9 +111,10 @@ class DigitalKeyboard(QWidget):
         self.setLayout(layout)
         self.show()
 
+    # Event handler for button clicks
     def key_pressed(self):
         key = self.sender().text()
-        #print(f"Key pressed: {key}")  # Debugging line
+        # print(f"Key pressed: {key}")  # Debugging line
 
         cursor = self.text_edit.textCursor()  # Initialize cursor here, just once
 
@@ -146,6 +157,7 @@ class DigitalKeyboard(QWidget):
         encrypted_text = self.cipher_suite.encrypt(encoded_text)
         return base64.urlsafe_b64encode(encrypted_text).decode()
 
+    # Event handler for text changes in the QTextEdit
     def text_edited(self):
         # Use the encrypt_text function, not encrypt_caesar
         plain_text = self.text_edit.toPlainText()
@@ -153,13 +165,14 @@ class DigitalKeyboard(QWidget):
             encrypted_text = self.encrypt_text(plain_text.rstrip('\n'))
             self.encrypted_text_edit.setPlainText(encrypted_text)
 
+    # Toggle Shift key
     def toggle_shift(self):
         self.is_shift = not self.is_shift
         for button in self.button_list:
             current_text = button.text()
             button.setText(current_text.upper() if self.is_shift else current_text.lower())
 
-    # Toggle Caps Lock
+    # Toggle Caps Lock key
     def toggle_capslock(self):
         self.is_capslock = not self.is_capslock
         for button in self.button_list:
@@ -169,7 +182,7 @@ class DigitalKeyboard(QWidget):
                 if new_text != current_text:
                     button.setText(new_text)
 
-    # Update buttons
+    # Update button text based on Shift or Caps Lock state
     def update_buttons(self):
         for button in self.button_list:
             current_text = button.text()
@@ -178,9 +191,9 @@ class DigitalKeyboard(QWidget):
             else:
                 button.setText(current_text.lower())
 
-    # Save text
+    # Save the text in the QTextEdit to a file
     def save_text(self):
-        with open("saved_text.txt", "w") as f:
+        with open("DigitalKeyBoard_text.txt", "w") as f:
             f.write(self.text_edit.toPlainText())
 
 
