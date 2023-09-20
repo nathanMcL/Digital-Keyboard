@@ -4,13 +4,14 @@
 # The emoji keys function :p
 # The save button saves the text file :)
 # The text field allows input from the system keyboard and digital keyboard
+# The Direction arrow keys function :) kinda :\
 
 # The second text field is read only
 # Once data is inputted, press 'enter'
 # Second screen will generate an AES encrypted text of your plain text message
 
 # During Operation:
-# *The digital keyboards additional keys do not function: capslock, shift, directional keys :(
+# *The digital keyboards additional keys do not function: capslock, shift :(
 # Use the system keyboard ATM.
 # Added lines of code that should have fixed caps lock and shift from closing program without error, unexpectedly :(
 # But, check out them emojis always adding more :) !!!
@@ -20,6 +21,7 @@ import sys
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QGridLayout, QScrollArea, QHBoxLayout, QFrame, QTextEdit
 from cryptography.fernet import Fernet
+from PyQt5.QtGui import QTextCursor
 
 
 # Define the main class inheriting from QWidget
@@ -29,8 +31,8 @@ class DigitalKeyboard(QWidget):
 
         # Emojis list
         emojis = ['😊', '😂', '😍', '😀', '😁', '🤣', '😄', '😅', '😆', '😉', '😋', '😎', '😘', '😗', '😙', '😚', '😛',
-                  '😜', '😝', '😞', '😟', '😠', '😡', '😢', '😭', '😰', '😱', '🌕', '🦄',
-                  "👍", "👎", "👊", "✋", "👐", "🙌", "🙏", "🤝", "✌️", "🤟"]
+                  '😜', '😝', '😞', '😟', '😠', '😡', '😢', '😭', '😰', '😱', "🥸", "🥵", "🥶", "🥴", "😵", "🤯", '🌕', '🦄',
+                  "👍", "👎", "👊", "✋", "👐", "🙌", "🙏", "🤝", "✌️", "🤟", "💃", "🕺", "🕴️", ]
 
         # Initialize internal variables
         self.is_shift = False
@@ -137,21 +139,35 @@ class DigitalKeyboard(QWidget):
             cursor.insertText(' ')
         elif key == 'Tab':
             cursor.insertText('\t')
-        elif key in self.emojis:  # you might want to make emojis a member variable for this to work
+        elif key in self.emojis:  # you might want to make emojis a member variable for this to work :p
             cursor.insertText(key)
         elif key == "Shift":
             self.toggle_shift()
         elif key == "Caps":  # Handle the Caps button
             self.toggle_capslock()
 
-        self.text_edit.setTextCursor(cursor)  # Update the cursor position
+        # Adding functionality for directional keys
+        elif key == 'Up':
+            cursor.movePosition(QTextCursor.Up)
+        elif key == 'Down':
+            cursor.movePosition(QTextCursor.Down)
+        elif key == 'Left':
+            cursor.movePosition(QTextCursor.Left)
+        elif key == 'Right':
+            cursor.movePosition(QTextCursor.Right)
+
+        # Make sure the cursor is visible
+        self.text_edit.ensureCursorVisible()
+
+        # Update the cursor position
+        self.text_edit.setTextCursor(cursor)
 
         # Encrypt the text using AES
         plain_text = self.text_edit.toPlainText()
         encrypted_text = self.encrypt_text(plain_text)
         self.encrypted_text_edit.setPlainText(encrypted_text)
 
-    # AES encryption instead of Caesar cipher
+    # AES encryption
     def encrypt_text(self, text):
         encoded_text = text.encode()
         encrypted_text = self.cipher_suite.encrypt(encoded_text)
