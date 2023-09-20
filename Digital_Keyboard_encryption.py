@@ -1,20 +1,19 @@
 # Digital keyboard
 # Two text fields One read only
-# the standard keys function
+# the standard keys function :D
 # The emoji keys function :p
 # The save button saves the text file :)
-# The text field allows input from the system keyboard and digital keyboard
+# The text field allows input from the system keyboard and digital keyboard :3
 # The Direction arrow keys function :) kinda :\
+# The Cap Lock and Shift buttons function :)
 
 # The second text field is read only
-# Once data is inputted, press 'enter'
+# Once data is inputted, press 'enter' or it will do it on its own :o
 # Second screen will generate an AES encrypted text of your plain text message
 
 # During Operation:
-# *The digital keyboards additional keys do not function: capslock, shift :(
-# Use the system keyboard ATM.
-# Added lines of code that should have fixed caps lock and shift from closing program without error, unexpectedly :(
-# But, check out them emojis always adding more :) !!!
+# Media keys do not function, might need to just remove, maybe too hard to input a media player :/
+# Things are working
 
 import base64
 import sys
@@ -36,7 +35,7 @@ class DigitalKeyboard(QWidget):
 
         # Initialize internal variables
         self.is_shift = False
-        self.is_capslock = False  # Add this ine to keep track of the Caps Lock status
+        self.is_capslock = False  # Add this line to keep track of the Caps Lock status
         self.setWindowTitle("Digital Keyboard")
 
         # Initialize grid layout
@@ -139,7 +138,7 @@ class DigitalKeyboard(QWidget):
             cursor.insertText(' ')
         elif key == 'Tab':
             cursor.insertText('\t')
-        elif key in self.emojis:  # you might want to make emojis a member variable for this to work :p
+        elif key in self.emojis:  # you might want to make emojis a member variable for this to work
             cursor.insertText(key)
         elif key == "Shift":
             self.toggle_shift()
@@ -186,7 +185,8 @@ class DigitalKeyboard(QWidget):
         self.is_shift = not self.is_shift
         for button in self.button_list:
             current_text = button.text()
-            button.setText(current_text.upper() if self.is_shift else current_text.lower())
+            if current_text != "Shift":  # Skip changing "Shift" button text
+                button.setText(current_text.upper() if self.is_shift else current_text.lower())
 
     # Toggle Caps Lock key
     def toggle_capslock(self):
@@ -194,9 +194,7 @@ class DigitalKeyboard(QWidget):
         for button in self.button_list:
             current_text = button.text()
             if len(current_text) == 1 and current_text.isalpha():  # Only affect alphabetical characters
-                new_text = current_text.upper() if self.is_capslock else current_text.lower()
-                if new_text != current_text:
-                    button.setText(new_text)
+                button.setText(current_text.upper() if self.is_capslock else current_text.lower())
 
     # Update button text based on Shift or Caps Lock state
     def update_buttons(self):
