@@ -10,19 +10,7 @@
 # Use Text_Editor_Decryption.py to decrypt messages
 
 # all the things work :)
-# The purpose of this Text Editor:
-# Created the Save, Save As, Open, Clear, Undo, and Redo choices
-# Toggle a dark or light theme
-# Toggle random color text theme
-# Created a Font style menu
-# Created a Font size menu
-# Created an Autosave feature that lets you choose to autosave every five or ten minutes
 
-# Encrypt the text
-# Generates the Encryption key
-# Use Text_Editor_Decryption.py to decrypt messages
-
-# all the things work :)
 
 import sys
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QTextEdit, QVBoxLayout, QWidget, QLabel,
