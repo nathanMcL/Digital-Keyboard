@@ -1,4 +1,4 @@
 # Digital-Keyboard
-Digital Keyboard project
+Digital Keyboard
 and
-Text Editor
+Text Editor project
