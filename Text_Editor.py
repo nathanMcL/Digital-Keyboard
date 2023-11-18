@@ -20,8 +20,8 @@ from PyQt5.QtWidgets import (QApplication, QMainWindow, QTextEdit, QVBoxLayout, 
                              QActionGroup, QPlainTextEdit)
 from PyQt5.QtGui import QIcon, QPalette, QColor, QTextCharFormat, QFont, QFontDatabase, QTextFormat, QPainter
 from cryptography.fernet import Fernet
-import random  # for generating random colors
 from PyQt5.QtCore import QTimer, QSize, QRect, Qt
+import random  # for generating random colors
 
 
 # Class to introduce line numbering to the text editor
@@ -37,6 +37,7 @@ class LineNumberArea(QWidget):
         self.codeEditor.lineNumberAreaPaintEvent(event)
 
 
+# Main editor class which inherits from QPlainTextEdit
 class CodeEditor(QPlainTextEdit):
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -77,7 +78,7 @@ class CodeEditor(QPlainTextEdit):
         extraSelections = []
         if not self.isReadOnly():
             selection = QTextEdit.ExtraSelection()
-            lineColor = QColor(Qt.yellow).lighter(260)  # trying to adjust, so maybe green isn't necessary
+            lineColor = QColor(Qt.yellow).lighter(300)  # trying to adjust, so maybe green isn't necessary
             selection.format.setBackground(lineColor)
             selection.format.setProperty(QTextFormat.FullWidthSelection, True)
             selection.cursor = self.textCursor()
@@ -108,6 +109,7 @@ class CodeEditor(QPlainTextEdit):
             blockNumber += 1
 
 
+# Main class for the text editor application, inheriting from QMainWindow
 class TextEditor(QMainWindow):
 
     def __init__(self):
@@ -119,7 +121,7 @@ class TextEditor(QMainWindow):
 
         # Setting up the main window
         self.setWindowTitle("MacN_ Text Editor")
-        self.setGeometry(100, 100, 800, 600)
+        self.setGeometry(100, 100, 1000, 800)
 
         # Status bar
         self.status_bar = self.statusBar()
@@ -180,6 +182,7 @@ class TextEditor(QMainWindow):
         # Create the menu bar
         self.create_menu_bar()
 
+    # Functions to create and handle the menu bar
     def create_menu_bar(self):
         menubar = self.menuBar()
         file_menu = QMenu("File", self)
@@ -261,7 +264,7 @@ class TextEditor(QMainWindow):
     def set_autosave_interval(self, minutes):
         self.autosave_timer.start(minutes * 60 * 1000)  # Convert minutes to milliseconds
 
-    # Autosave the file function
+    # Autosave timer setup function
     def autosave(self):
         if self.current_filename:
             with open(self.current_filename, 'w') as file:
@@ -269,6 +272,7 @@ class TextEditor(QMainWindow):
         else:
             self.save_file()
 
+    # Function to open a file
     def open_file(self):
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getOpenFileName(self, "Open File", "", "Text Files (*.txt);;All Files (*)",
@@ -278,6 +282,7 @@ class TextEditor(QMainWindow):
                 self.text_edit.setPlainText(file.read())
                 self.current_filename = file_name
 
+    # Function to save a file
     def save_file(self):
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getSaveFileName(self, "Save File", "", "Text Files (*.txt);;All Files (*)",
@@ -288,8 +293,13 @@ class TextEditor(QMainWindow):
                 self.current_filename = file_name
 
     def save_file_as(self):
-        self.save_file()
-        self.current_filename = file_name  # Not sure why there is a red squiggle, No error is generated
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getSaveFileName(self, "Save File As", "", "Text Files (*.txt);;All Files (*)",
+                                                   options=options)
+        if file_name:
+            with open(file_name, 'w') as file:
+                file.write(self.text_edit.toPlainText())
+                self.current_filename = file_name  # Update the current filename
 
     # Toggle random color
     def toggle_random_color(self):
