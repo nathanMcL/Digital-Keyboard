@@ -1,5 +1,5 @@
 # The purpose of this Text Editor:
-# Created the Save, Save As, Open, Clear, Undo, and Redo choices
+# Created the Save, Save As, Open, Clear, Undo, Redo, and Close choices
 # Toggle a dark or light theme
 # Toggle random color text theme
 # Created a Font style menu
@@ -226,6 +226,12 @@ class TextEditor(QMainWindow):
         toggle_random_color_action = QAction("Toggle Random Color", self)
         toggle_random_color_action.triggered.connect(self.toggle_random_color)
         file_menu.addAction(toggle_random_color_action)
+
+        # "Close" action
+        close_action = QAction("Close", self)
+        close_action.setShortcut("Ctrl+Q")
+        close_action.triggered.connect(self.close)  # Connect to the closed method
+        file_menu.addAction(close_action)
 
         # Font ComboBox
         font_menu = QMenu("Font", self)
